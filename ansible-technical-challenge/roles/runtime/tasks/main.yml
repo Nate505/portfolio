@@ -1,0 +1,22 @@
+- name: Install required packages
+  apt:
+    name:
+      - curl
+      - git
+    update_cache: yes
+
+- name: Add NodeSource repo for Node.js 20
+  shell: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
+
+- name: Install Node.js
+  apt:
+    name: nodejs
+    update_cache: yes
+
+- name: Install PM2 globally
+  npm:
+    name: pm2
+    global: yes
+

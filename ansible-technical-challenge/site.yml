@@ -1,0 +1,8 @@
+- name: Deploy Next.js app with PM2
+  hosts: app_servers
+  become: true
+
+  roles:
+    - runtime
+    - app
+

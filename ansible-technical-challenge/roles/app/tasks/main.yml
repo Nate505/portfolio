@@ -1,0 +1,38 @@
+- name: Set app variables
+  set_fact:
+    app_dir: /opt/my-next-app
+    app_name: my-next-app
+
+- name: Clone or update repo
+  git:
+    repo: "https://github.com/Nate505/portfolio"
+    dest: "{{ app_dir }}"
+    version: "main"
+    force: yes
+
+- name: Install dependencies
+  shell: npm ci
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Build Next.js app
+  shell: npm run build
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Start app with PM2
+  shell: pm2 start npm --name "{{ app_name }}" -- start
+  args:
+    chdir: "{{ app_dir }}"
+
+- name: Save PM2 process list
+  shell: pm2 save
+
+- name: Enable PM2 on boot (systemd)
+  shell: pm2 startup systemd -u root --hp /root
+  args:
+    creates: /etc/systemd/system/pm2-root.service
+
+- name: Save PM2 process list (after startup is installed)
+  shell: pm2 save
+
